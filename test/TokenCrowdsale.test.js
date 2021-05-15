@@ -7,7 +7,7 @@ require('chai')
 contract('TokenCrowdsale', ([_, _wallet]) => {
 
     let token;
-    let tokencrowdsale;
+    let crowdsale;
 
     // Token config
     const name = 'mTC Token';
@@ -16,11 +16,27 @@ contract('TokenCrowdsale', ([_, _wallet]) => {
 
     // TokenCrowdsale config
     const rate = 500;
-    const wallet = '';
-    const tokenAddress = '';
+    const wallet = _wallet;
 
     beforeEach(async () => {
         token = await Token.new(name, symbol, decimals); // Deploy Token
-        tokencrowdsale = await TokenCrowdsale.new(rate, wallet, tokenAddress) // Deploy TokenCrowdsale
-    })
-})    
+        crowdsale = await TokenCrowdsale.new(rate, wallet, token.address) // Deploy TokenCrowdsale
+    });
+
+    describe('crowdsale', () => {
+        it('tracks the rate', async () => {
+            const _rate = await crowdsale.rate();
+            _rate.toString().should.equal(rate.toString());
+        });
+
+        it('tracks the wallet', async () => {
+            const _wallet = await crowdsale.wallet();
+            _wallet.toString().should.equal(wallet.toString());
+        });
+
+        it('tracks the token', async () => {
+            const _token = await crowdsale.token();
+            _token.should.equal(token.address);
+        });
+    });
+});    

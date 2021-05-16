@@ -10,8 +10,9 @@ pragma solidity 0.4.24;
 //Token Distribution & Vesting
 
 import "openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
+import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 
-contract TokenCrowdsale is Crowdsale {
+contract TokenCrowdsale is Crowdsale, MintedCrowdsale {
     
     constructor(
         uint256 _rate, 

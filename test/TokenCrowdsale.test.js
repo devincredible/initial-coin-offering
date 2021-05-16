@@ -1,10 +1,14 @@
+import { AssertionError, use } from 'chai';
+import ether from './helpers/ether';
+
 const Token = artifacts.require('Token');
 const TokenCrowdsale = artifacts.require('TokenCrowdsale');
 
 require('chai')
+    use(require('chai-as-promised'))
     .should();
 
-contract('TokenCrowdsale', ([_, _wallet]) => {
+contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
 
     let token;
     let crowdsale;
@@ -21,6 +25,7 @@ contract('TokenCrowdsale', ([_, _wallet]) => {
     beforeEach(async () => {
         token = await Token.new(name, symbol, decimals); // Deploy Token
         crowdsale = await TokenCrowdsale.new(rate, wallet, token.address) // Deploy TokenCrowdsale
+        await token.transferOwnership(crowdsale.address);
     });
 
     describe('crowdsale', () => {
@@ -37,6 +42,24 @@ contract('TokenCrowdsale', ([_, _wallet]) => {
         it('tracks the token', async () => {
             const _token = await crowdsale.token();
             _token.should.equal(token.address);
+        });
+    });
+
+    describe('minted crowdsale', () => {
+        it('mints tokens after purchase', async() => {
+            const originalTotalSupply = await token.totalSupply();
+            await crowdsale.sendTransaction({ value: ether(1), from: investor1 });
+            const newTotalSupply = await token.totalSupply();
+            assert.isTrue(newTotalSupply > originalTotalSupply);
+        });
+    });
+    
+    describe('accepting payments', () => {
+        it('should accept payments', async () => {
+            const value = ether(1);
+            const purchaser = investor2;
+            await crowdsale.sendTransaction({ value: value, from: investor1 }).should.be.fulfilled;
+            await crowdsale.buyTokens(investor1, { value: value, from: purchaser }).should.be.fulfilled;
         });
     });
 });    

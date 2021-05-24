@@ -12,8 +12,9 @@ pragma solidity 0.4.24;
 import "openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
+import "openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 
-contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale {
+contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale {
     
     uint256 public investorMinCap = 2000000000000000; // Minimum investor contribution - 0.002 Ether
     uint256 public investorMaxCap = 50000000000000000000; // Maximum investor contribution - 50 Ether
@@ -23,10 +24,13 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale {
         uint256 _rate, 
         address _wallet, 
         ERC20 _token,
-        uint256 _cap
+        uint256 _cap,
+        uint256 _openingTime,
+        uint256 _closingTime
     ) 
         Crowdsale(_rate, _wallet, _token)
         CappedCrowdsale(_cap)
+        TimedCrowdsale(_openingTime, _closingTime)
         public 
     {
 

@@ -17,7 +17,7 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale {
     
     uint256 public investorMinCap = 2000000000000000; // Minimum investor contribution - 0.002 Ether
     uint256 public investorMaxCap = 50000000000000000000; // Maximum investor contribution - 50 Ether
-    mapping(address => uint256) public contributions;
+    mapping(address => uint256) contributions;
     
     constructor(
         uint256 _rate, 
@@ -32,8 +32,12 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale {
 
     }
 
+    function getUserContribution(address _beneficiary) public view returns(uint256) {
+        return contributions[_beneficiary];
+    }
+    
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
-        super._preValidatePurchase(_beneficiary, _weiAmount);
+        super._preValidatePurchase(_beneficiary, _weiAmount); // call parent contract and its function _preValidatePurchase
         uint256 _existingContribution = contributions[_beneficiary];
         uint256 _newContribution = _existingContribution.add(_weiAmount);
         require(_newContribution >= investorMinCap && _newContribution <= investorMaxCap);

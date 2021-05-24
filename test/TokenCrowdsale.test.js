@@ -1,12 +1,18 @@
 import ether from './helpers/ether';
-import EVMRevert from './Helpers/EVMRevert';
+import EVMRevert from './helpers/EVMRevert';
+import { increaseTimeTo, duration } from './helpers/increaseTime';
+import latestTime from './helpers/latestTime';
+
 
 const Token = artifacts.require('Token');
 const TokenCrowdsale = artifacts.require('TokenCrowdsale');
 
+const BigNumber = web3.BigNumber;
+
 require('chai')
-    .use(require('chai-as-promised'))
-    .should();
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should();
 
 contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
 
@@ -24,11 +30,16 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
     const cap = ether(100);
     const minCap = ether(0.002);
     const maxCap = ether(50);
+    let openingTime;
+    let closingTime;
 
     beforeEach(async () => {
+        openingTime = await latestTime() + duration.weeks(1);
+        closingTime = await openingTime + duration.weeks(1);
         token = await Token.new(name, symbol, decimals); // Deploy Token
-        crowdsale = await TokenCrowdsale.new(rate, wallet, token.address, cap) // Deploy TokenCrowdsale
-        await token.transferOwnership(crowdsale.address);
+        crowdsale = await TokenCrowdsale.new(rate, wallet, token.address, cap, openingTime, closingTime); // Deploy TokenCrowdsale
+        await token.transferOwnership(crowdsale.address); // transfer ownership of the token to the crowdsale
+        await increaseTimeTo(openingTime + 1); // Advance time to crowdsale start 
     });
 
     describe('crowdsale', () => {
@@ -61,6 +72,13 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
         it('has the correct cap', async () => {
             const _cap = await crowdsale.cap();
             _cap.toString().should.equal(cap.toString());
+        });
+    });
+
+    describe('timed crowdsale', () => {
+        it('is open', async() => {
+            const isClosed = await crowdsale.hasClosed();
+            isClosed.should.be.false;
         });
     });
     
@@ -98,7 +116,7 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
                 const value1 = ether(2);
                 await crowdsale.buyTokens(investor1, { value: value1, from: investor1 });
                 // Second contribution
-                const value2 = ether(49);
+                const value2 = maxCap;
                 await crowdsale.buyTokens(investor1, { value: value2, from: investor1 }).should.be.rejectedWith(EVMRevert);
             });
 

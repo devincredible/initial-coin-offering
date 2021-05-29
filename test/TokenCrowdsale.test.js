@@ -36,6 +36,7 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
         token = await Token.new(name, symbol, decimals); // Deploy Token
         crowdsale = await TokenCrowdsale.new(rate, wallet, token.address, cap, openingTime, closingTime); // Deploy TokenCrowdsale
         await token.transferOwnership(crowdsale.address); // transfer ownership of the token to the crowdsale
+        await crowdsale.addAddressesToWhitelist([investor1, investor2]) // Add investors to the whitelist
         await increaseTimeTo(openingTime + 1); // Advance time to crowdsale start 
     });
 
@@ -76,6 +77,13 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
         it('is open', async() => {
             const isClosed = await crowdsale.hasClosed();
             isClosed.should.be.false;
+        });
+    });
+
+    describe('whitelisted crowdsale', () => {
+        it('rejects contributions from non-whitelisted investors', async() => {
+            const notWhitelisted = _;
+            await crowdsale.buyTokens(notWhitelisted, { value: ether(1), from: notWhitelisted }).should.be.rejectedWith(EVMRevert);
         });
     });
     

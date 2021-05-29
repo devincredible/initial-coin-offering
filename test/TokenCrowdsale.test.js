@@ -7,11 +7,8 @@ import latestTime from './helpers/latestTime';
 const Token = artifacts.require('Token');
 const TokenCrowdsale = artifacts.require('TokenCrowdsale');
 
-const BigNumber = web3.BigNumber;
-
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(BigNumber))
   .should();
 
 contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {

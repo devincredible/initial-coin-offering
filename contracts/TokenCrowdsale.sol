@@ -13,9 +13,11 @@ import "openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
+import "openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
-contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale {
+contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale, WhitelistedCrowdsale {
     
+    // Track investor contributions
     uint256 public investorMinCap = 2000000000000000; // Minimum investor contribution - 0.002 Ether
     uint256 public investorMaxCap = 50000000000000000000; // Maximum investor contribution - 50 Ether
     mapping(address => uint256) contributions;

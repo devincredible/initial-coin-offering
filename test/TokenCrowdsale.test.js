@@ -266,6 +266,10 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
                 const paused = await token.paused();
                 paused.should.be.false
 
+                // Transfers ownership to the wallet
+                const owner = await token.owner();
+                owner.should.equal(wallet);
+
                 // Prevents the investor claiming refund
                 await vault.refund(investor1).should.be.rejectedWith(EVMRevert);
             });

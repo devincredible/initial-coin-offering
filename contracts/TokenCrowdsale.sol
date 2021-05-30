@@ -76,10 +76,11 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
     * @dev forwards funds to the wallet during the preICO stage, and to the refund vault during ICO stage
     */
     function _forwardFunds() internal {
-        if(stage == CrowdsaleStage.preICO) {
+        if(stage == CrowdsaleStage.PreICO) {
             wallet.transfer(msg.value);
-        } else if(stage == CrowdsaleStage.ICO)
+        } else if (stage == CrowdsaleStage.ICO) {
             super._forwardFunds();
+        }
     }
     
     /**

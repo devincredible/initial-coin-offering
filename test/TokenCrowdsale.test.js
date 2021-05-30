@@ -104,41 +104,63 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
     //     });
     // });
 
-    // describe('refundable crowdsale', () => {
-    //     beforeEach(async() => {
-    //         await crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
-    //     });
-
-    //     describe('during crowdsale', async() => {
-    //         it('prevents the investor from claiming refund', async() => {
-    //             await vault.refund(investor1, { from: investor1 }).should.be.rejectedWith(EVMRevert);
-    //         });
-    //     });
-    // });
-
-    describe('crowdsale stages', () => {
-        it('it starts in preICO', async() => {
-            const stage = await crowdsale.stage();
-            stage.toString().should.equal(preICOStage.toString());
+    describe('refundable crowdsale', () => {
+        beforeEach(async() => {
+            await crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
         });
 
-        it('it starts at the preICO rate', async() => {
-            const _rate = await crowdsale.rate();
-            _rate.toString().should.equal(preICORate.toString());
+        describe('during crowdsale', async() => {
+            it('prevents the investor from claiming refund', async() => {
+                await vault.refund(investor1, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+            });
         });
 
-        it('allows admin to update the stage and the rate', async() => {
-            await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
-            const stage = await crowdsale.stage();
-            stage.toString().should.equal(ICOStage.toString());
-            const _rate = await crowdsale.rate();
-            _rate.toString().should.equal(ICORate.toString());
+        describe('when the stage is preICO', async() => {
+            it('forwards funds to the wallet', async() => {
+                const balance = await web3.eth.getBalance(wallet);
+                expect(Number(balance)).to.be.above(Number(ether(100)));
+            });
         });
 
-        it('prevents non-admin from updatign the stage', async() => {
-            await crowdsale.setCrowdsaleStage(ICOStage, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+        describe('when the stage is ICO', async() => {
+            it('forwards funds to the refund vault', async() => {
+                await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
+                await crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
+                const balance = await web3.eth.getBalance(vaultAddress);
+                expect(Number(balance)).to.be.above(0);
+            });
+        });
+
+        describe('during crowdsale', async() => {
+            it('prevents the investor from claiming refund', async() => {
+                await vault.refund(investor1, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+            });
         });
     });
+
+    // describe('crowdsale stages', () => {
+    //     it('it starts in preICO', async() => {
+    //         const stage = await crowdsale.stage();
+    //         stage.toString().should.equal(preICOStage.toString());
+    //     });
+
+    //     it('it starts at the preICO rate', async() => {
+    //         const _rate = await crowdsale.rate();
+    //         _rate.toString().should.equal(preICORate.toString());
+    //     });
+
+    //     it('allows admin to update the stage and the rate', async() => {
+    //         await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
+    //         const stage = await crowdsale.stage();
+    //         stage.toString().should.equal(ICOStage.toString());
+    //         const _rate = await crowdsale.rate();
+    //         _rate.toString().should.equal(ICORate.toString());
+    //     });
+
+    //     it('prevents non-admin from updatign the stage', async() => {
+    //         await crowdsale.setCrowdsaleStage(ICOStage, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+    //     });
+    // });
     
     // describe('accepting payments', () => {
     //     it('should accept payments', async () => {

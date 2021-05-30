@@ -45,10 +45,32 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
         require(_goal <= _cap);
     }
 
+    /**
+    * @dev Returns the amount contributed so far by a sepecific user.
+    * @param _beneficiary Address of contributor
+    * @return User contribution so far
+    */    
     function getUserContribution(address _beneficiary) public view returns(uint256) {
         return contributions[_beneficiary];
     }
+
+    /**
+    * @dev Allows admin to update the crowdsale stage
+    * @param _stage Crowdsale stage
+    */    
+    function setCwordsaleStage(uint _stage) public onlyOwner {
+        if(uint(CrowdsaleStage.PreICO) == _stage) {
+            stage = CrowdsaleStage.PreICO;        
+        } else if(uint(CrowdsaleStage.ICO) == _stage) {
+            stage = CrowdsaleStage.ICO;
+        }
+    }
     
+    /**
+    * @dev Extend parent behavior requiring purchase to respect investor min/max funding cap.
+    * @param _beneficiary Token purchaser
+    * @param _weiAmount Amount of wei contributed
+    */    
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount); // call parent contract and its function _preValidatePurchase
         uint256 _existingContribution = contributions[_beneficiary];

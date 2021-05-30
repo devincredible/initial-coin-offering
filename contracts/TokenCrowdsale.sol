@@ -30,6 +30,12 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
     // Crowdsale Stages
     enum CrowdsaleStage { PreICO, ICO }
     CrowdsaleStage public stage = CrowdsaleStage.PreICO;
+
+    // Token Distribution
+    uint256 public tokenSalePercentage = 70;
+    uint256 public foundersPercentage = 10;
+    uint256 public foundationPercentage = 10;
+    uint256 public partnersPercentage = 10;
     
     constructor(
         uint256 _rate, 

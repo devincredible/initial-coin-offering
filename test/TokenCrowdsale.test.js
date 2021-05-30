@@ -42,6 +42,11 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
     const ICOStage = 1;
     const preICORate = 500;
     const ICORate = 250;
+
+    const tokenSalePercentage = 70;
+    const foundersPercentage = 10;
+    const foundationPercentage = 10;
+    const partnersPercentage = 10;
   
     beforeEach(async () => {
         openingTime = await latestTime() + duration.weeks(1);
@@ -275,4 +280,30 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
             });
         });
     });
+
+    describe('token distribution', () => {
+        let _tokenSalePercentage;
+        let _foundersPercentage;
+        let _foundationPercentage;
+        let _partnersPercentage;
+        
+        beforeEach(async() => {
+            _tokenSalePercentage = await crowdsale.tokenSalePercentage();
+            _foundersPercentage = await crowdsale.foundersPercentage();
+            _foundationPercentage = await crowdsale.foundationPercentage();
+            _partnersPercentage = await crowdsale.partnersPercentage();
+        });
+        
+        it('tracks the distribution', async() => {            
+            _tokenSalePercentage.toString().should.equal(tokenSalePercentage.toString(), 'has correct token sale percentage');            
+            _foundersPercentage.toString().should.equal(foundersPercentage.toString(), 'has correct founders percentage');            
+            _foundationPercentage.toString().should.equal(foundationPercentage.toString(), 'has correct foundation percentage');            
+            _partnersPercentage.toString().should.equal(partnersPercentage.toString(), 'has correct partners percentage');        
+        });
+
+        it('valid percentace', async() => {
+            const total = Number(tokenSalePercentage) + Number(foundersPercentage) + Number(foundationPercentage) + Number(partnersPercentage);
+            total.should.equal(100);
+        });
+    });    
 });    

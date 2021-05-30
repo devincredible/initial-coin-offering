@@ -40,6 +40,8 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
 
     const preICOStage = 0;
     const ICOStage = 1;
+    const preICORate = 500;
+    const ICORate = 250;
 
     beforeEach(async () => {
         openingTime = await latestTime() + duration.weeks(1);
@@ -117,13 +119,20 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
     describe('crowdsale stages', () => {
         it('it starts in preICO', async() => {
             const stage = await crowdsale.stage();
-            stage.toString().should.equal(preICOStage.toString())
+            stage.toString().should.equal(preICOStage.toString());
         });
 
-        it('allows admin to update the stage', async() => {
+        it('it starts at the preICO rate', async() => {
+            const _rate = await crowdsale.rate();
+            _rate.toString().should.equal(preICORate.toString());
+        });
+
+        it('allows admin to update the stage and the rate', async() => {
             await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
             const stage = await crowdsale.stage();
             stage.toString().should.equal(ICOStage.toString());
+            const _rate = await crowdsale.rate();
+            _rate.toString().should.equal(ICORate.toString());
         });
 
         it('prevents non-admin from updatign the stage', async() => {

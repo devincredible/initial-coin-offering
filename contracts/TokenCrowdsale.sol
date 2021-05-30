@@ -108,6 +108,8 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
             // Finish minting the token
             MintableToken _mintableToken = MintableToken(token);
             _mintableToken.finishMinting();
+            // Unpause the token
+            PausableToken(token).unpause();
         }
 
         super.finalization();

@@ -42,12 +42,13 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
     const ICOStage = 1;
     const preICORate = 500;
     const ICORate = 250;
-
+  
     beforeEach(async () => {
         openingTime = await latestTime() + duration.weeks(1);
         closingTime = await openingTime + duration.weeks(1);
         token = await Token.new(name, symbol, decimals); // Deploy Token
         crowdsale = await TokenCrowdsale.new(rate, wallet, token.address, cap, openingTime, closingTime, goal); // Deploy TokenCrowdsale
+        await token.pause(); // Pause the token
         await token.transferOwnership(crowdsale.address); // transfer ownership of the token to the crowdsale
         await crowdsale.addManyToWhitelist([investor1, investor2]) // Add investors to the whitelist
         await increaseTimeTo(openingTime + 1); // Advance time to crowdsale start
@@ -57,52 +58,52 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
         vault = await RefundVault.at(vaultAddress); // Create a new abstraction to represent the contract at that address
     });
 
-    // describe('crowdsale', () => {
-    //     it('tracks the rate', async () => {
-    //         const _rate = await crowdsale.rate();
-    //         _rate.toString().should.equal(rate.toString());
-    //     });
+    describe('crowdsale', () => {
+        it('tracks the rate', async () => {
+            const _rate = await crowdsale.rate();
+            _rate.toString().should.equal(rate.toString());
+        });
 
-    //     it('tracks the wallet', async () => {
-    //         const _wallet = await crowdsale.wallet();
-    //         _wallet.toString().should.equal(wallet.toString());
-    //     });
+        it('tracks the wallet', async () => {
+            const _wallet = await crowdsale.wallet();
+            _wallet.toString().should.equal(wallet.toString());
+        });
 
-    //     it('tracks the token', async () => {
-    //         const _token = await crowdsale.token();
-    //         _token.should.equal(token.address);
-    //     });
-    // });
+        it('tracks the token', async () => {
+            const _token = await crowdsale.token();
+            _token.should.equal(token.address);
+        });
+    });
 
-    // describe('minted crowdsale', () => {
-    //     it('mints tokens after purchase', async() => {
-    //         const originalTotalSupply = await token.totalSupply();
-    //         await crowdsale.sendTransaction({ value: ether(1), from: investor1 });
-    //         const newTotalSupply = await token.totalSupply();
-    //         assert.isTrue(newTotalSupply > originalTotalSupply);
-    //     });
-    // });
+    describe('minted crowdsale', () => {
+        it('mints tokens after purchase', async() => {
+            const originalTotalSupply = await token.totalSupply();
+            await crowdsale.sendTransaction({ value: ether(1), from: investor1 });
+            const newTotalSupply = await token.totalSupply();
+            assert.isTrue(newTotalSupply > originalTotalSupply);
+        });
+    });
 
-    // describe('capped crowdsale', () => {
-    //     it('has the correct cap', async () => {
-    //         const _cap = await crowdsale.cap();
-    //         _cap.toString().should.equal(cap.toString());
-    //     });
-    // });
+    describe('capped crowdsale', () => {
+        it('has the correct cap', async () => {
+            const _cap = await crowdsale.cap();
+            _cap.toString().should.equal(cap.toString());
+        });
+    });
 
-    // describe('timed crowdsale', () => {
-    //     it('is open', async() => {
-    //         const isClosed = await crowdsale.hasClosed();
-    //         isClosed.should.be.false;
-    //     });
-    // });
+    describe('timed crowdsale', () => {
+        it('is open', async() => {
+            const isClosed = await crowdsale.hasClosed();
+            isClosed.should.be.false;
+        });
+    });
 
-    // describe('whitelisted crowdsale', () => {
-    //     it('rejects contributions from non-whitelisted investors', async() => {
-    //         const notWhitelisted = _;
-    //         await crowdsale.buyTokens(notWhitelisted, { value: ether(1), from: notWhitelisted }).should.be.rejectedWith(EVMRevert);
-    //     });
-    // });
+    describe('whitelisted crowdsale', () => {
+        it('rejects contributions from non-whitelisted investors', async() => {
+            const notWhitelisted = _;
+            await crowdsale.buyTokens(notWhitelisted, { value: ether(1), from: notWhitelisted }).should.be.rejectedWith(EVMRevert);
+        });
+    });
 
     describe('refundable crowdsale', () => {
         beforeEach(async() => {
@@ -138,77 +139,136 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
         });
     });
 
-    // describe('crowdsale stages', () => {
-    //     it('it starts in preICO', async() => {
-    //         const stage = await crowdsale.stage();
-    //         stage.toString().should.equal(preICOStage.toString());
-    //     });
+    describe('crowdsale stages', () => {
+        it('it starts in preICO', async() => {
+            const stage = await crowdsale.stage();
+            stage.toString().should.equal(preICOStage.toString());
+        });
 
-    //     it('it starts at the preICO rate', async() => {
-    //         const _rate = await crowdsale.rate();
-    //         _rate.toString().should.equal(preICORate.toString());
-    //     });
+        it('it starts at the preICO rate', async() => {
+            const _rate = await crowdsale.rate();
+            _rate.toString().should.equal(preICORate.toString());
+        });
 
-    //     it('allows admin to update the stage and the rate', async() => {
-    //         await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
-    //         const stage = await crowdsale.stage();
-    //         stage.toString().should.equal(ICOStage.toString());
-    //         const _rate = await crowdsale.rate();
-    //         _rate.toString().should.equal(ICORate.toString());
-    //     });
+        it('allows admin to update the stage and the rate', async() => {
+            await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
+            const stage = await crowdsale.stage();
+            stage.toString().should.equal(ICOStage.toString());
+            const _rate = await crowdsale.rate();
+            _rate.toString().should.equal(ICORate.toString());
+        });
 
-    //     it('prevents non-admin from updatign the stage', async() => {
-    //         await crowdsale.setCrowdsaleStage(ICOStage, { from: investor1 }).should.be.rejectedWith(EVMRevert);
-    //     });
-    // });
+        it('prevents non-admin from updatign the stage', async() => {
+            await crowdsale.setCrowdsaleStage(ICOStage, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+        });
+    });
     
-    // describe('accepting payments', () => {
-    //     it('should accept payments', async () => {
-    //         const value = ether(1);
-    //         const purchaser = investor2;
-    //         await crowdsale.sendTransaction({ value: value, from: investor1 }).should.be.fulfilled;
-    //         await crowdsale.buyTokens(investor1, { value: value, from: purchaser }).should.be.fulfilled;
-    //     });
-    // });
+    describe('accepting payments', () => {
+        it('should accept payments', async () => {
+            const value = ether(1);
+            const purchaser = investor2;
+            await crowdsale.sendTransaction({ value: value, from: investor1 }).should.be.fulfilled;
+            await crowdsale.buyTokens(investor1, { value: value, from: purchaser }).should.be.fulfilled;
+        });
+    });
 
-    // describe('buyTokens()', () => {
-    //     describe('when contribution is less than the minimum cap', () => {
-    //         it('rejects the transaction', async() => {
-    //             const value = minCap - 1;
-    //             await crowdsale.buyTokens(investor2, { value: value, from: investor2 }).should.be.rejectedWith(EVMRevert);
-    //         });
-    //     });
+    describe('buyTokens()', () => {
+        describe('when contribution is less than the minimum cap', () => {
+            it('rejects the transaction', async() => {
+                const value = minCap - 1;
+                await crowdsale.buyTokens(investor2, { value: value, from: investor2 }).should.be.rejectedWith(EVMRevert);
+            });
+        });
 
-    //     describe('when investor has already met the minimum cap', () => {
-    //         it('allows the investor to contribute below the minimum cap', async() => {
-    //             // First contribution
-    //             const value1 = ether(1);
-    //             await crowdsale.buyTokens(investor1, { value: value1, from: investor1 });
-    //             // Second contribution
-    //             const value2 = 1; // 1 wei
-    //             await crowdsale.buyTokens(investor1, { value: value2, from: investor1 }).should.be.fulfilled;
-    //         });
-    //     });
+        describe('when investor has already met the minimum cap', () => {
+            it('allows the investor to contribute below the minimum cap', async() => {
+                // First contribution
+                const value1 = ether(1);
+                await crowdsale.buyTokens(investor1, { value: value1, from: investor1 });
+                // Second contribution
+                const value2 = 1; // 1 wei
+                await crowdsale.buyTokens(investor1, { value: value2, from: investor1 }).should.be.fulfilled;
+            });
+        });
 
-    //     describe('when the total contributions exceed the investor max cap', () => {
-    //         it('rejects the transaction', async() => {
-    //             // First contribution
-    //             const value1 = ether(2);
-    //             await crowdsale.buyTokens(investor1, { value: value1, from: investor1 });
-    //             // Second contribution
-    //             const value2 = maxCap;
-    //             await crowdsale.buyTokens(investor1, { value: value2, from: investor1 }).should.be.rejectedWith(EVMRevert);
-    //         });
+        describe('when the total contributions exceed the investor max cap', () => {
+            it('rejects the transaction', async() => {
+                // First contribution
+                const value1 = ether(2);
+                await crowdsale.buyTokens(investor1, { value: value1, from: investor1 });
+                // Second contribution
+                const value2 = maxCap;
+                await crowdsale.buyTokens(investor1, { value: value2, from: investor1 }).should.be.rejectedWith(EVMRevert);
+            });
 
-    //     });
+        });
 
-    //     describe('when contribution is within the valid range', () => {
-    //         it('succeeds and updates the contribution amount', async() => {
-    //             const value = ether(2);
-    //             await crowdsale.buyTokens(investor2, { value: value, from: investor2 }).should.be.fulfilled;
-    //             const contribution = await crowdsale.getUserContribution(investor2);
-    //             contribution.toString().should.equal(value.toString());
-    //         });
-    //     });
-    // });
+        describe('when contribution is within the valid range', () => {
+            it('succeeds and updates the contribution amount', async() => {
+                const value = ether(2);
+                await crowdsale.buyTokens(investor2, { value: value, from: investor2 }).should.be.fulfilled;
+                const contribution = await crowdsale.getUserContribution(investor2);
+                contribution.toString().should.equal(value.toString());
+            });
+        });
+    });
+
+    describe('token transfers', function () {
+        it('investors cannot transfer tokens during crowdsale', async function () {
+            // Buy some tokens first
+            await crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
+            // Attempt to transfer tokens during crowdsale
+            await token.transfer(investor2, 1, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+        });
+    });
+    
+    describe('finalizing the crowdsale', () => {
+        describe('when the goal is NOT reached', () => {
+            beforeEach(async() => {
+                // Do not meet the goal
+                await crowdsale.buyTokens(investor2, { value: ether(1), from: investor2 });
+                // Fastforward past end time
+                await increaseTimeTo(closingTime + 1);
+                // Finalize the crowdsale
+                await crowdsale.finalize({ from: _ });
+            });
+
+            it('investors can claim refund', async() => {
+                await vault.refund(investor2).should.be.fulfilled;
+            });
+        });
+
+        describe('when the goal is reached', async() => {
+            
+            beforeEach(async() => {
+                // track current wallet balance
+                let walletBalance = await web3.eth.getBalance(wallet);
+                // Meet the goal
+                await web3.eth.sendTransaction({ from: _, to: investor1, value: ether(25) }); // Transfer extra ether to investor1 account
+                await crowdsale.buyTokens(investor1, { value: ether(26), from: investor1 });
+                await crowdsale.buyTokens(investor2, { value: ether(26), from: investor2 });
+                // Fastforward past end time
+                await increaseTimeTo(closingTime + 1);
+                // Finalize the crowdsale
+                await crowdsale.finalize({ from: _ });
+            });
+
+            it('handles goal reached', async() => {
+                // Trackes the goal reached
+                const goalReached = await crowdsale.goalReached();
+                goalReached.should.be.true;
+
+                // Finishes minting the token
+                const mintingFinished = await token.mintingFinished();
+                mintingFinished.should.be.true;
+
+                // Unpauses the token
+                const paused = await token.paused();
+                paused.should.be.false
+
+                // Prevents the investor claiming refund
+                await vault.refund(investor1).should.be.rejectedWith(EVMRevert);
+            });
+        });
+    });
 });    

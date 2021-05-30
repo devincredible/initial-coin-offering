@@ -36,6 +36,17 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
     uint256 public foundersPercentage = 10;
     uint256 public foundationPercentage = 10;
     uint256 public partnersPercentage = 10;
+
+    // Token reserve funds
+    address public foundersFund;
+    address public foundationFund;
+    address public partnersFund;
+
+    // Token timelock
+    uint256 public releaseTime;
+    address public foundersTimelock;
+    address public foundationTimelock;
+    address public partnersTimelock;
     
     constructor(
         uint256 _rate, 
@@ -44,7 +55,11 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
         uint256 _cap,
         uint256 _openingTime,
         uint256 _closingTime,
-        uint256 _goal
+        uint256 _goal,
+        address _foundersFund,
+        address _foundationFund,
+        address _partnersFund,
+        uint256 _releaseTime
     ) 
         Crowdsale(_rate, _wallet, _token)
         CappedCrowdsale(_cap)
@@ -53,6 +68,10 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
         public 
     {
         require(_goal <= _cap);
+        foundersFund = _foundersFund;
+        foundationFund = _foundationFund;
+        partnersFund = _partnersFund;
+        releaseTime = _releaseTime;
     }
 
     /**
@@ -113,6 +132,18 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
         if(goalReached()) {
             // Finish minting the token
             MintableToken _mintableToken = MintableToken(token);
+            uint256 _alreadyMinted = _mintableToken.totalSupply();
+            uint256 _finalTotalSupply = _alreadyMinted.div(tokenSalePercentage).mul(100);
+
+            // Timelock contracts instanciated
+            foundersTimelock = new TokenTimelock(token, foundersFund, releaseTime);
+            foundationTimelock = new TokenTimelock(token, foundationFund, releaseTime);
+            partnersTimelock = new TokenTimelock(token, partnersFund, releaseTime);
+
+            _mintableToken.mint(foundersTimelock, _finalTotalSupply.div(foundersPercentage));
+            _mintableToken.mint(foundationTimelock, _finalTotalSupply.div(foundersPercentage));
+            _mintableToken.mint(partnersTimelock, _finalTotalSupply.div(foundersPercentage));
+
             _mintableToken.finishMinting();
             // Unpause the token
             PausableToken _pausableToken = PausableToken(token);

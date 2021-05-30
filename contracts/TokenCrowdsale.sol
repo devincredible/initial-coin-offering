@@ -9,6 +9,10 @@ pragma solidity 0.4.24;
 // Presale/Public Sale
 //Token Distribution & Vesting
 
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/TokenTimelock.sol";
 import "openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
@@ -94,6 +98,19 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
         uint256 _newContribution = _existingContribution.add(_weiAmount);
         require(_newContribution >= investorMinCap && _newContribution <= investorMaxCap);
         contributions[_beneficiary] = _newContribution;
+    }
+
+    /**
+    * @dev enables token transfers, called when owners call finalize()
+    */
+    function finalization() internal {
+        if(goalReached()) {
+            // Finish minting the token
+            MintableToken _mintableToken = MintableToken(token);
+            _mintableToken.finishMinting();
+        }
+
+        super.finalization();
     }
 
 }

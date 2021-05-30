@@ -23,6 +23,10 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
     uint256 public investorMaxCap = 50000000000000000000; // Maximum investor contribution - 50 Ether
     mapping(address => uint256) contributions;
     
+    // Crowdsale Stages
+    enum CrowdsaleStage { PreICO, ICO }
+    CrowdsaleStage public stage = CrowdsaleStage.PreICO;
+    
     constructor(
         uint256 _rate, 
         address _wallet, 

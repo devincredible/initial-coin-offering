@@ -58,7 +58,7 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
     * @dev Allows admin to update the crowdsale stage
     * @param _stage Crowdsale stage
     */    
-    function setCwordsaleStage(uint _stage) public onlyOwner {
+    function setCrowdsaleStage(uint _stage) public onlyOwner {
         if(uint(CrowdsaleStage.PreICO) == _stage) {
             stage = CrowdsaleStage.PreICO;        
         } else if(uint(CrowdsaleStage.ICO) == _stage) {

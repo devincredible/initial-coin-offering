@@ -119,6 +119,16 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2]) => {
             const stage = await crowdsale.stage();
             stage.toString().should.equal(preICOStage.toString())
         });
+
+        it('allows admin to update the stage', async() => {
+            await crowdsale.setCrowdsaleStage(ICOStage, { from: _ });
+            const stage = await crowdsale.stage();
+            stage.toString().should.equal(ICOStage.toString());
+        });
+
+        it('prevents non-admin from updatign the stage', async() => {
+            await crowdsale.setCrowdsaleStage(ICOStage, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+        });
     });
     
     // describe('accepting payments', () => {

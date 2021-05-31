@@ -130,21 +130,22 @@ contract TokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCro
     */
     function finalization() internal {
         if(goalReached()) {
-            // Finish minting the token
-            MintableToken _mintableToken = MintableToken(token);
-            uint256 _alreadyMinted = _mintableToken.totalSupply();
-            uint256 _finalTotalSupply = _alreadyMinted.div(tokenSalePercentage).mul(100);
-
             // Timelock contracts instanciated
             foundersTimelock = new TokenTimelock(token, foundersFund, releaseTime);
             foundationTimelock = new TokenTimelock(token, foundationFund, releaseTime);
             partnersTimelock = new TokenTimelock(token, partnersFund, releaseTime);
+            
+            // Finish minting the token
+            MintableToken _mintableToken = MintableToken(token);
+            uint256 _alreadyMinted = _mintableToken.totalSupply();
+            uint256 _finalTotalSupply = _alreadyMinted.div(tokenSalePercentage).mul(100);
 
             _mintableToken.mint(foundersTimelock, _finalTotalSupply.div(foundersPercentage));
             _mintableToken.mint(foundationTimelock, _finalTotalSupply.div(foundersPercentage));
             _mintableToken.mint(partnersTimelock, _finalTotalSupply.div(foundersPercentage));
 
             _mintableToken.finishMinting();
+            
             // Unpause the token
             PausableToken _pausableToken = PausableToken(token);
             _pausableToken.unpause();

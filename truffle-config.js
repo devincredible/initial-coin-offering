@@ -3,9 +3,6 @@ require('babel-polyfill');
 require('dotenv').config();
 const HDWalletProvider = require('truffle-hdwallet-provider');
 
-
-
-
 module.exports = {
   networks: {
     development: {
@@ -17,7 +14,7 @@ module.exports = {
       provider: function() {
         return new HDWalletProvider(
           process.env.MNEMONIC,
-          `https://ropsten.infura.io/${process.env.INFURA_API_KEY}`
+          `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`
         );
       },
       gas: 5000000,

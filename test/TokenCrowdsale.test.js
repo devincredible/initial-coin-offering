@@ -3,7 +3,6 @@ import EVMRevert from './helpers/EVMRevert';
 import { increaseTimeTo, duration } from './helpers/increaseTime';
 import latestTime from './helpers/latestTime';
 
-
 const Token = artifacts.require('Token');
 const TokenCrowdsale = artifacts.require('TokenCrowdsale');
 const RefundVault = artifacts.require('./RefundVault');
@@ -37,7 +36,7 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2, _foundersFund, _f
 
     const goal = ether(50);
 
-    let foundersFund = _foundersFund;
+    const foundersFund = _foundersFund;
     const foundationFund = _foundationFund;
     const partnersFund = _partnersFund;
 
@@ -58,8 +57,10 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2, _foundersFund, _f
         openingTime = await latestTime() + duration.weeks(1);
         closingTime = await openingTime + duration.weeks(1);
         releaseTime = closingTime + duration.years(1);
+
         token = await Token.new(name, symbol, decimals); // Deploy Token
         crowdsale = await TokenCrowdsale.new(rate, wallet, token.address, cap, openingTime, closingTime, goal, foundersFund, foundationFund, partnersFund, releaseTime); // Deploy TokenCrowdsale
+        
         await token.pause(); // Pause the token
         await token.transferOwnership(crowdsale.address); // transfer ownership of the token to the crowdsale
         await crowdsale.addManyToWhitelist([investor1, investor2]) // Add investors to the whitelist
@@ -253,8 +254,6 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2, _foundersFund, _f
         describe('when the goal is reached', async() => {
             
             beforeEach(async() => {
-                // track current wallet balance
-                let walletBalance = await web3.eth.getBalance(wallet);
                 // Meet the goal
                 await web3.eth.sendTransaction({ from: _, to: investor1, value: ether(25) }); // Transfer extra ether to investor1 account
                 await crowdsale.buyTokens(investor1, { value: ether(26), from: investor1 });
@@ -266,7 +265,7 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2, _foundersFund, _f
             });
 
             it('handles goal reached', async() => {
-                // Trackes the goal reached
+                // Tracks the goal reached
                 const goalReached = await crowdsale.goalReached();
                 goalReached.should.be.true;
 
@@ -324,7 +323,7 @@ contract('TokenCrowdsale', ([_, _wallet, investor1, investor2, _foundersFund, _f
                 const partnersTimelock = await TokenTimelock.at(partnersTimelockAddress);
                 await partnersTimelock.release().should.be.rejectedWith(EVMRevert);
 
-                // Can withdraw from timelicks
+                // Can withdraw from timelocks
                 await increaseTimeTo(releaseTime + 1);
 
                 await foundersTimelock.release().should.be.fulfilled;

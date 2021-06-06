@@ -1,13 +1,15 @@
 pragma solidity 0.4.24;
 
-// Crowdsale
-// Timed Crowdsale
-// Capped Crowdsale
-// Minted Crowdsale
-// Whitelisted Crowdsale
-// Refundable Crowdsale
-// Presale/Public Sale
-//Token Distribution & Vesting
+/**
+* Crowdsale
+* Timed Crowdsale
+* Capped Crowdsale
+* Minted Crowdsale
+* Whitelisted Crowdsale
+* Refundable Crowdsale
+* Presale/Public Sale
+* Token Distribution & Vesting
+*/
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/PausableToken.sol";

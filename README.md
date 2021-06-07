@@ -101,7 +101,7 @@ There are some aspects to take into account:
 - This is a capped crowdsale, which means that there is a maximum amount of funds (Ether) to be raised
 - This is a timed crowdsale, which means that there is a specific duration for each phase of this ICO
 - This is a whitelisted crowdsale, which means that investors must be added to the list if they want to participate
-- This is a refudnable crowdsale, which means that if the raised amount is not achieving a specific goal, investors can claim their Ether back
+- This is a refundable crowdsale, which means that if the raised amount is not achieving a specific goal, investors can claim their Ether back
 
 We can distinguish between 3 different phases: pre-ICO, ICO and post-ICO:
 

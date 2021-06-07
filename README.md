@@ -8,7 +8,7 @@
 
 # Initial Coin Offering
 
-This is an Initial Coin Offering (ICO) built with smart contracts powered by Ethereum. It basically consists in a set of smart contracts to raise funds from different investors, providing them a new ERC20 token.
+This is an Initial Coin Offering (ICO) built with smart contracts powered by Ethereum. It basically consists in a set of smart contracts to raise funds from different investors, providing them a new ERC-20 token.
 
 ## Table of Contents
 
@@ -94,6 +94,21 @@ $ truffle migrate --network ropsten
 
 ## The Project
 
+This project consists in a set of smart contracts powered by Ethereum, which purpose is to raise funds from different investors, providing them ERC-20 tokens in exchange. This way of raising funds via tokens is called ICO (initial coin offering).
+
+There are some aspects to take into account:
+- This is a minted crowdsale, which means that Tokens are created (minted) as soon as the investor sends Ether
+- This is a capped crowdsale, which means that there is a maximum amount of funds (Ether) to be raised
+- This is a timed crowdsale, which means that there is a specific duration for each phase of this ICO
+- This is a whitelisted crowdsale, which means that investors must be added to the list if they want to participate
+- This is a refudnable crowdsale, which means that if the raised amount is not achieving a specific goal, investors can claim their Ether back
+
+We can distinguish between 3 different phases: pre-ICO, ICO and post-ICO:
+
+### Pre-ICO
+
+<img src="img/pre-ico.png">
+
 
 
 ## Project requirements
@@ -102,5 +117,7 @@ $ truffle migrate --network ropsten
 
 ## Resources
 
-- [react-testing-library](https://testing-library.com/docs/react-testing-library/intro/)
-- [reactjs.org](https://reactjs.org/)
+- [ethereum.org](https://ethereum.org/)
+- [truffle suit](https://www.trufflesuite.com/)
+- [node.js](https://nodejs.org/)
+- [web3.js](https://web3js.readthedocs.io/)

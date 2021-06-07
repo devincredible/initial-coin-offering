@@ -102,18 +102,52 @@ There are some aspects to take into account:
 - This is a timed crowdsale, which means that there is a specific duration for each phase of this ICO
 - This is a whitelisted crowdsale, which means that investors must be added to the list if they want to participate
 - This is a refundable crowdsale, which means that if the raised amount is not achieving a specific goal, investors can claim their Ether back
+- Tokens are paused until the crowdsale is over, meaning that investors cannot transfer or sell Tokens until the crowdsale is over
 
 We can distinguish between 3 different phases: pre-ICO, ICO and post-ICO:
 
-### Pre-ICO
+### Pre-ICO phase
 
 <img src="./img/pre-ico.PNG">
 
+During the pre-ICO phase, investors can buy Tokens at a better rate than later on. The mechanism to buy consists in the investor sending Ether to the Crowdsale smart contract. Then, the investor will receive the Tokens (minted by the Crowdsale), and the Crowdsale smart contract will send the Ether to the owner's wallet. 
+These Ethers cannot be refunded.
 
+### ICO phase
 
-## Project requirements
+<img src="./img/ico.PNG">
 
+During the ICO phase, investors can buy Tokens using the same mechanism as in previous phase, but there are two main differences:
+- Ethers invested can be refunded if the Crowdsale is not raising enough funds, so not achieving the defined goal
+- The rate is not as good as in the pre-ICO phase, meaning that the investor will receive less amount of Tokens with the same amount of Ether invested
 
+As you can see in the image above, Ether is sent to the Refund Vault smart contract, and depending on if the goal is achieved or not, the funds will be sent to the owner's wallet or back to those investors who claim their funds.
+
+### Post-ICO phase
+
+Once the ICO is over after a certain amount of time (defined by deployer), there are 2 possible scenarios:
+- The goal is not achieved
+- The goal is achieved
+
+#### Goal not achieved
+
+<img src="./img/post-ico-goal-not-achieved.PNG">
+
+In this case, investors can claim their funds to the Refund Vault smart contract, and they will receive their invested Ether back
+
+#### Goal achieved
+
+<img src="./img/post-ico-goal-achieved.PNG">
+
+If the goal is acheived, first of all the Ether is sent from the Refund Vault smart contract to the owner's wallet.
+This means investors cannot claim their funds back anymore.
+
+Secondly the Tokens are unpaused, meaning they can already by transferred.
+
+Then, the Crowdsale smart contract is deploying three different smart contracts (one for foudners, one for the foundation and one for partners).
+The purpose of these Timelock smart contracts is to send Tokens there and lock them until the vesting period is over.
+Only then the vesting period is over, these tokens can be claimed to be sent to the founders, foudnation and partners wallet's.
+This is a mechanism to keep the tokenomics of the Token under control.
 
 ## Resources
 

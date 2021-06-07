@@ -14,7 +14,6 @@ This is an Initial Coin Offering (ICO) built with smart contracts powered by Eth
 
 - [Getting Started](#getting-started)
 - [The Project](#the-project)
-- [Project requirements](#project-requirements)
 - [Resources](#resources)
 
 ## Getting Started
@@ -96,7 +95,7 @@ $ truffle migrate --network ropsten
 
 This project consists in a set of smart contracts powered by Ethereum, which purpose is to raise funds from different investors, providing them ERC-20 tokens in exchange. This way of raising funds via tokens is called ICO (initial coin offering).
 
-There are some aspects to take into account:
+There are some aspects to consider:
 - This is a minted crowdsale, which means that Tokens are created (minted) as soon as the investor sends Ether
 - This is a capped crowdsale, which means that there is a maximum amount of funds (Ether) to be raised
 - This is a timed crowdsale, which means that there is a specific duration for each phase of this ICO
@@ -133,20 +132,20 @@ Once the ICO is over after a certain amount of time (defined by deployer), there
 
 <img src="./img/post-ico-goal-not-achieved.PNG">
 
-In this case, investors can claim their funds to the Refund Vault smart contract, and they will receive their invested Ether back
+In this case, investors can claim their funds to the Refund Vault smart contract, and they will receive their invested Ether back.
 
 #### Goal achieved
 
 <img src="./img/post-ico-goal-achieved.PNG">
 
-If the goal is acheived, first of all the Ether is sent from the Refund Vault smart contract to the owner's wallet.
+If the goal is acheived, first of all, the Ether is sent from the Refund Vault smart contract to the owner's wallet.
 This means investors cannot claim their funds back anymore.
 
 Secondly the Tokens are unpaused, meaning they can already by transferred.
 
-Then, the Crowdsale smart contract is deploying three different smart contracts (one for foudners, one for the foundation and one for partners).
+Finally, the Crowdsale smart contract is deploying three different smart contracts (one for foudners, one for the foundation and one for partners).
 The purpose of these Timelock smart contracts is to send Tokens there and lock them until the vesting period is over.
-Only then the vesting period is over, these tokens can be claimed to be sent to the founders, foudnation and partners wallet's.
+Only then the vesting period is over, these tokens can be claimed to be sent to the founders, foudnation and partners wallets.
 This is a mechanism to keep the tokenomics of the Token under control.
 
 ## Resources

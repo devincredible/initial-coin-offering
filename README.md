@@ -1,11 +1,5 @@
 `#Ethereum`
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 # Initial Coin Offering
 
 This is an Initial Coin Offering (ICO) built with smart contracts powered by Ethereum. It basically consists in a set of smart contracts to raise funds from different investors, providing them a new ERC-20 token.
@@ -20,8 +14,6 @@ This is an Initial Coin Offering (ICO) built with smart contracts powered by Eth
 
 These instructions will get you a copy of the project up and running on your
 local machine for development and testing purposes.
-
-See deployment for notes on how to deploy the project on a live system.
 
 ### The repository
 
@@ -44,7 +36,7 @@ Run the following command in your terminal after cloning the main repo:
 $ npm install
 ```
 
-Secondly, you will need to install Truffle globally by running the following command int your terminal:
+Then, you will need to install Truffle globally by running the following command int your terminal:
 
 ```
 $ npm install -g truffle
@@ -145,8 +137,12 @@ Secondly the Tokens are unpaused, meaning they can already by transferred.
 
 Finally, the Crowdsale smart contract is deploying three different smart contracts (one for foudners, one for the foundation and one for partners).
 The purpose of these Timelock smart contracts is to send Tokens there and lock them until the vesting period is over.
-Only then the vesting period is over, these tokens can be claimed to be sent to the founders, foudnation and partners wallets.
+Only when the vesting period is over, these tokens can be claimed to be sent to the founders, foudnation and partners wallets.
 This is a mechanism to keep the tokenomics of the Token under control.
+
+The amount of Tokens sent will depend on the amount of Tokens purchased by all investors, and it will follow this distribution:
+
+<img src="./img/token-distribution.PNG">
 
 ## Resources
 

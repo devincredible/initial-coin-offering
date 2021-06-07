@@ -107,7 +107,7 @@ We can distinguish between 3 different phases: pre-ICO, ICO and post-ICO:
 
 ### Pre-ICO
 
-<img src="img/pre-ico.png">
+<img src="./img/pre-ico.png">
 
 
 
